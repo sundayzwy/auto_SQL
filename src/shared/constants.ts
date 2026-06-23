@@ -1,4 +1,9 @@
+// ============================================================
 // SQL 关键字定义
+// 涵盖 Impala 和 Oracle 两种方言的通用关键字
+// ============================================================
+
+/** SQL 关键字集合 */
 export const SQL_KEYWORDS = new Set([
   // SELECT 相关
   'SELECT', 'FROM', 'WHERE', 'AS', 'ON', 'USING',
@@ -42,7 +47,14 @@ export const SQL_KEYWORDS = new Set([
   'COMMENT', 'EXPLAIN', 'ANALYZE', 'DESCRIBE', 'SHOW',
 ]);
 
-// Impala 特有函数
+// ============================================================
+// 方言特有函数定义
+// ============================================================
+
+/**
+ * Impala 特有函数集合
+ * 包含聚合函数、窗口函数、数学函数、字符串函数、日期函数、条件函数等
+ */
 export const IMPALA_FUNCTIONS = new Set([
   'COUNT', 'SUM', 'AVG', 'MIN', 'MAX',
   'GROUP_CONCAT', 'APPEND_TRUNCATE',
@@ -63,7 +75,10 @@ export const IMPALA_FUNCTIONS = new Set([
   'CAST', 'COALESCE', 'NULLIF', 'IFNULL',
 ]);
 
-// Oracle 特有函数
+/**
+ * Oracle 特有函数集合
+ * 包含聚合函数、窗口函数、数学函数、字符串函数、日期函数、条件函数、系统函数等
+ */
 export const ORACLE_FUNCTIONS = new Set([
   'COUNT', 'SUM', 'AVG', 'MIN', 'MAX',
   'LISTAGG', 'STRING_AGG',
@@ -86,14 +101,18 @@ export const ORACLE_FUNCTIONS = new Set([
   'USER', 'UID', 'SYS_CONTEXT', 'USERENV',
 ]);
 
-// 操作符
+// ============================================================
+// 词法分析辅助集合
+// ============================================================
+
+/** 操作符集合（用于词法分析阶段的 Token 识别） */
 export const OPERATORS = new Set([
   '=', '<', '>', '<=', '>=', '<>', '!=',
   '+', '-', '*', '/', '%',
   '||', '&&',
 ]);
 
-// 标点符号
+/** 标点符号集合（用于词法分析阶段的 Token 识别） */
 export const PUNCTUATION = new Set([
   '(', ')', ',', ';', '.', '[', ']', '{', '}',
 ]);

@@ -1,79 +1,33 @@
+/**
+ * 工具栏组件
+ *
+ * 提供方言切换、格式化、性能分析、DDL 导入和重置等操作入口。
+ * 通过 useSqlAnalysis Hook 与引擎层解耦，仅负责 UI 渲染。
+ */
+
 import React from 'react';
 import { useSqlStore } from '../../store/sqlStore';
-import { Parser } from '../../engine/parser';
-import { Formatter } from '../../engine/formatter';
-import { RuleEngine } from '../../engine/rules';
-import { SqlOptimizer } from '../../engine/optimizer';
-import { DdlParser } from '../../engine/metadata';
+import { useSqlAnalysis } from '../../hooks/useSqlAnalysis';
 
 const Toolbar: React.FC = () => {
-  const {
-    dialect,
-    setDialect,
-    inputSql,
-    setFormattedSql,
-    setOptimizedSql,
-    setIssues,
-    tables,
-    formatConfig,
-    addTable,
-  } = useSqlStore();
+  const { dialect, setDialect, tables } = useSqlStore();
+  const { format, analyze, importDdl, reset } = useSqlAnalysis();
 
-  const handleFormat = () => {
-    if (!inputSql.trim()) return;
-
-    const formatter = new Formatter(formatConfig);
-    const result = formatter.format(inputSql, dialect);
-
-    if (result.success && result.formattedSql) {
-      setFormattedSql(result.formattedSql);
-    }
-  };
-
-  const handleAnalyze = () => {
-    if (!inputSql.trim()) return;
-
-    const parser = new Parser();
-    const parseResult = parser.parse(inputSql, dialect);
-
-    if (!parseResult.success || !parseResult.ast) {
-      setIssues([]);
-      return;
-    }
-
-    const ruleEngine = new RuleEngine();
-    const issues = ruleEngine.analyze(parseResult.ast, dialect, tables);
-    setIssues(issues);
-
-    if (issues.length > 0) {
-      const optimizer = new SqlOptimizer();
-      const optimizedSql = optimizer.optimize(inputSql, issues);
-      setOptimizedSql(optimizedSql);
-    }
-  };
-
-  const handleImportDdl = async () => {
+  /**
+   * 处理 DDL 导入
+   * 通过 prompt 弹窗获取用户输入的 DDL 语句
+   */
+  const handleImportDdl = () => {
     const ddl = prompt('请输入 DDL 语句：');
     if (!ddl) return;
 
-    const ddlParser = new DdlParser();
-    const tables = ddlParser.parse(ddl, dialect);
-
-    for (const table of tables) {
-      addTable(table);
-    }
-
-    alert(`成功导入 ${tables.length} 个表的元数据`);
-  };
-
-  const handleReset = () => {
-    setFormattedSql('');
-    setOptimizedSql('');
-    setIssues([]);
+    const count = importDdl(ddl);
+    alert(`成功导入 ${count} 个表的元数据`);
   };
 
   return (
     <div className="bg-white border-b border-gray-200 px-4 py-2 flex items-center gap-4">
+      {/* 方言选择 */}
       <div className="flex items-center gap-2">
         <label className="text-sm font-medium text-gray-700">方言：</label>
         <select
@@ -86,20 +40,23 @@ const Toolbar: React.FC = () => {
         </select>
       </div>
 
+      {/* 格式化按钮 */}
       <button
-        onClick={handleFormat}
+        onClick={format}
         className="px-4 py-1 bg-blue-500 text-white rounded text-sm hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
       >
         格式化
       </button>
 
+      {/* 性能分析按钮 */}
       <button
-        onClick={handleAnalyze}
+        onClick={analyze}
         className="px-4 py-1 bg-green-500 text-white rounded text-sm hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500"
       >
         性能分析
       </button>
 
+      {/* 导入 DDL 按钮 */}
       <button
         onClick={handleImportDdl}
         className="px-4 py-1 bg-purple-500 text-white rounded text-sm hover:bg-purple-600 focus:outline-none focus:ring-2 focus:ring-purple-500"
@@ -107,15 +64,18 @@ const Toolbar: React.FC = () => {
         导入 DDL
       </button>
 
+      {/* 重置按钮 */}
       <button
-        onClick={handleReset}
+        onClick={reset}
         className="px-4 py-1 bg-gray-500 text-white rounded text-sm hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500"
       >
         重置
       </button>
 
+      {/* 弹性空间 */}
       <div className="flex-1" />
 
+      {/* 已加载表数量 */}
       <div className="text-sm text-gray-500">
         已加载 {tables.size} 个表
       </div>

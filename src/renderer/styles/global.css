@@ -1,7 +1,16 @@
+/* ============================================================
+ * Tailwind CSS 基础层
+ * 引入 Tailwind 的 base、components、utilities 三层样式
+ * ============================================================ */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+/* ============================================================
+ * 全局基础样式
+ * ============================================================ */
+
+/* 页面主体：重置 margin，设置系统默认字体和字体平滑 */
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
@@ -11,11 +20,13 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* 代码字体：使用等宽字体族 */
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
 
+/* 根节点：全屏布局，禁止滚动溢出 */
 #root {
   width: 100vw;
   height: 100vh;

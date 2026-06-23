@@ -2,8 +2,15 @@ import React from 'react';
 import Editor from '@monaco-editor/react';
 import { useSqlStore } from '../../store/sqlStore';
 
+/**
+ * SQL 输入面板组件
+ *
+ * 提供基于 Monaco Editor 的 SQL 代码编辑区域，支持语法高亮。
+ * 顶部显示面板标题，底部状态栏显示当前输入的行数和字符数。
+ * 编辑器内容变更时自动同步到全局 store。
+ */
 const SqlInput: React.FC = () => {
-  const { inputSql, setInputSql, dialect } = useSqlStore();
+  const { inputSql, setInputSql } = useSqlStore();
 
   return (
     <div className="flex flex-col h-full">

@@ -26,6 +26,14 @@ import { O003_PaginationOptimization } from './oracle/O003_PaginationOptimizatio
 import { O004_AvoidOrFullScan } from './oracle/O004_AvoidOrFullScan';
 import { O005_HintUsage } from './oracle/O005_HintUsage';
 
+/**
+ * 规则引擎
+ *
+ * 负责加载、管理和执行所有 SQL 优化规则。规则引擎在初始化时自动注册
+ * 所有通用规则（common）、Impala 规则和 Oracle 规则，并根据配置的
+ * 方言和启用状态筛选适用的规则执行分析。通过 setEnabledRules 可以
+ * 动态控制启用哪些规则，通过 getAvailableRules 可以获取所有已注册的规则。
+ */
 export class RuleEngine {
   private rules: Rule[] = [];
   private enabledRules: Set<string> = new Set();
@@ -34,6 +42,12 @@ export class RuleEngine {
     this.loadRules();
   }
 
+  /**
+   * 加载所有已注册的 SQL 优化规则
+   *
+   * 在构造函数中调用，将通用规则、Impala 规则和 Oracle 规则
+   * 全部注册到规则列表中，并默认启用所有规则。
+   */
   private loadRules(): void {
     // 通用规则
     this.rules.push(new R001_AvoidSelectStar());
@@ -64,14 +78,38 @@ export class RuleEngine {
     this.rules.forEach(rule => this.enabledRules.add(rule.id));
   }
 
+  /**
+   * 设置启用的规则列表
+   *
+   * 通过传入规则 ID 数组来指定哪些规则需要执行。
+   * 未在列表中的规则将被跳过。
+   *
+   * @param ruleIds - 需要启用的规则 ID 数组
+   */
   setEnabledRules(ruleIds: string[]): void {
     this.enabledRules = new Set(ruleIds);
   }
 
+  /**
+   * 获取所有可用规则
+   *
+   * @returns 所有已注册的规则实例列表，包含通用规则、Impala 规则和 Oracle 规则
+   */
   getAvailableRules(): Rule[] {
     return this.rules;
   }
 
+  /**
+   * 对 AST 执行规则分析
+   *
+   * 遍历所有已注册的规则，筛选出已启用且适用于当前方言的规则，
+   * 依次执行分析并汇总所有检测到的问题。单条规则分析异常不会中断整个流程。
+   *
+   * @param ast - 待分析的抽象语法树根节点
+   * @param dialect - 目标 SQL 方言（impala 或 oracle）
+   * @param metadata - 可选的表元数据映射
+   * @returns 所有规则检测到的问题列表
+   */
   analyze(ast: ASTNode, dialect: SqlDialect, metadata?: Map<string, TableMetadata>): Issue[] {
     const issues: Issue[] = [];
 

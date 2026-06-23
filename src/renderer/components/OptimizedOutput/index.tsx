@@ -2,9 +2,18 @@ import React from 'react';
 import Editor from '@monaco-editor/react';
 import { useSqlStore } from '../../store/sqlStore';
 
+/**
+ * 优化结果面板组件
+ *
+ * 以只读模式展示经过优化器处理后的 SQL 代码。
+ * 当有优化结果时，标题栏右侧显示"复制"按钮，可一键复制到剪贴板。
+ * 当没有优化结果时，显示"暂无优化建议"的占位提示。
+ * 使用 Monaco Editor 提供语法高亮展示。
+ */
 const OptimizedOutput: React.FC = () => {
-  const { optimizedSql, inputSql } = useSqlStore();
+  const { optimizedSql } = useSqlStore();
 
+  /** 将优化后的 SQL 复制到系统剪贴板 */
   const handleCopy = () => {
     navigator.clipboard.writeText(optimizedSql);
   };

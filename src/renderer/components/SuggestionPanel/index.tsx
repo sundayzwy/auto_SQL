@@ -1,9 +1,24 @@
 import React from 'react';
 import { useSqlStore } from '../../store/sqlStore';
 
+/**
+ * 调优建议面板组件
+ *
+ * 展示规则引擎分析后检测到的 SQL 性能问题列表。
+ * 每个问题卡片包含：标题、严重级别、描述、优化建议和源码位置。
+ * 当没有问题时显示"暂无建议"的占位文字。
+ * 标题栏显示问题总数计数器。
+ */
 const SuggestionPanel: React.FC = () => {
   const { issues } = useSqlStore();
 
+  /**
+   * 根据严重级别返回对应的 Tailwind CSS 颜色样式
+   * - error（错误）：红色背景，表示必须修复的问题
+   * - warning（警告）：黄色背景，表示建议修复的问题
+   * - info（信息）：蓝色背景，表示优化提示
+   * - 默认：灰色背景
+   */
   const getSeverityColor = (severity: string) => {
     switch (severity) {
       case 'error':

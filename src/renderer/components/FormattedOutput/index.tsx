@@ -2,9 +2,17 @@ import React from 'react';
 import Editor from '@monaco-editor/react';
 import { useSqlStore } from '../../store/sqlStore';
 
+/**
+ * 格式化结果面板组件
+ *
+ * 以只读模式展示格式化后的 SQL 代码。
+ * 当有格式化结果时，标题栏右侧显示"复制"按钮，可将格式化 SQL 一键复制到剪贴板。
+ * 使用 Monaco Editor 提供语法高亮展示。
+ */
 const FormattedOutput: React.FC = () => {
   const { formattedSql } = useSqlStore();
 
+  /** 将格式化后的 SQL 复制到系统剪贴板 */
   const handleCopy = () => {
     navigator.clipboard.writeText(formattedSql);
   };
