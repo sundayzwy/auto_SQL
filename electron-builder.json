@@ -1,30 +1,30 @@
 {
   "appId": "com.autosql.app",
   "productName": "AutoSQL",
+  "artifactName": "AutoSQL-${version}-portable.${ext}",
   "directories": {
     "output": "release"
   },
   "files": [
     "dist/**/*",
-    "resources/**/*"
+    "resources/**/*",
+    "package.json"
   ],
+  "extraResources": [
+    {
+      "from": "resources",
+      "to": "resources"
+    }
+  ],
+  "portable": {
+    "artifactName": "AutoSQL-${version}-portable.exe"
+  },
   "win": {
     "target": [
-      {
-        "target": "nsis",
-        "arch": ["x64"]
-      },
       {
         "target": "portable",
         "arch": ["x64"]
       }
-    ],
-    "icon": "resources/icon.ico"
-  },
-  "nsis": {
-    "oneClick": false,
-    "allowToChangeInstallationDirectory": true,
-    "createDesktopShortcut": true,
-    "createStartMenuShortcut": true
+    ]
   }
 }
