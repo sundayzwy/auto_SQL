@@ -1,0 +1,65 @@
+name: Build Windows EXE
+
+# ============================================================
+# AutoSQL Windows Portable EXE 自动打包
+# ============================================================
+# 触发条件：
+#   1. 推送形如 v*.*.* 的 tag（如 v1.0.0）→ 自动发布 Release
+#   2. 手动触发（Actions 页面 Run workflow）→ 仅产出 artifact，不发布
+# ============================================================
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+  workflow_dispatch:
+
+permissions:
+  contents: write   # 允许创建 Release
+
+jobs:
+  build:
+    name: Build Portable EXE
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout 源码
+        uses: actions/checkout@v4
+
+      - name: 设置 Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: 安装依赖
+        run: npm ci
+
+      - name: 构建（Renderer + Main）
+        run: npm run build
+
+      - name: 打包 Portable EXE
+        run: npm run pack
+        env:
+          # 跳过自动更新相关步骤，避免 CI 环境无 GitHub Token 报错
+          GH_TOKEN: ''
+
+      - name: 查看打包产物
+        run: dir release
+
+      - name: 上传构建产物（artifact）
+        uses: actions/upload-artifact@v4
+        with:
+          name: AutoSQL-portable
+          path: release/*.exe
+          if-no-files-found: error
+
+      # 仅 tag 推送时创建 GitHub Release
+      - name: 创建 Release 并附带 EXE
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: release/*.exe
+          generate_release_notes: true
+          draft: false
+          prerelease: false

@@ -10,6 +10,10 @@ dist/
 release/
 *.tsbuildinfo
 
+# 源码目录下的 .js 编译产物（应仅保留 .ts 源文件）
+src/**/*.js
+!src/main/**/*.js
+
 # 日志
 *.log
 npm-debug.log*
